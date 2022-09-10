@@ -43,4 +43,4 @@
 - approachability: A language should be in such a way that a programmer can realate things whith their prior experience.
 - Developer Experience: debugging is the main part of programming, language should be easy to debug , this will save lots of time of devs.
 
-- Resource Oriented Programming: As we know a small mistake in code can lead to million dollar loss , by the help of resources it can be very hard for a    developer to made a mistake. this can restrict devs to make mistake  at some extent. 
+- Resource Oriented Programming: As we know a small mistake in code can lead to million dollar loss , by the help of resources it can be hard for a    developer to made a mistake. this can restrict devs to make mistakes which can lead to major losses of some important nfs etc. 
