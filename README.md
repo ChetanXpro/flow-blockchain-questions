@@ -44,3 +44,20 @@
 - Developer Experience: debugging is the main part of programming, language should be easy to debug , this will save lots of time of devs.
 
 - Resource Oriented Programming: As we know a small mistake in code can lead to million dollar loss , by the help of resources it can be hard for a    developer to made a mistake. this can restrict devs to make mistakes which can lead to major losses of some important nfs etc. 
+
+
+# Chapter-2 Day1
+
+
+1.Deploy a contract to account 0x03 called "JacobTucker". Inside that contract, declare a constant variable named is, and make it have type String. Initialize it to "the best" when your contract gets deployed.
+
+![contract](https://user-images.githubusercontent.com/107798155/189510226-ca5943b2-547f-4ea0-9623-2483208899d7.png)
+
+
+2.Check that your variable is actually equals "the best" by executing a script to read that variable. Include a screenshot of the output.
+
+![script](https://user-images.githubusercontent.com/107798155/189510337-5e13c872-7904-4911-a7cc-3988e8d3186d.png)
+
+
+
+
