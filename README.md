@@ -82,5 +82,30 @@
   ![transaction](https://user-images.githubusercontent.com/107798155/189511021-1d34fa54-e9b4-43cc-a32b-72407593580d.png)
    
   ![script](https://user-images.githubusercontent.com/107798155/189511030-5a25082f-a88e-4c12-8def-e01eba3eb26c.png)
+  
 
-   
+# Chapter-2 Day 3
+
+1. In a script, initialize an array (that has length == 3) of your favourite people, represented as Strings, and log it.
+
+- ![array](https://user-images.githubusercontent.com/107798155/193441697-40dfca55-b562-479d-a990-4f184141dc97.png)
+
+
+2. In a script, initialize a dictionary that maps the Strings Facebook, Instagram, Twitter, YouTube, Reddit, and LinkedIn to a UInt64 that represents the order in which you use them from most to least. For example, YouTube --> 1, Reddit --> 2, etc. If you've never used one before, map it to 0!.
+
+- ![dictionary](https://user-images.githubusercontent.com/107798155/193441724-e2294758-77b3-49c3-9564-f6227c6d2ac6.png)
+
+3. Explain what the force unwrap operator ! does, with an example different from the one I showed you (you can just change the type).
+
+- ! force cadence to not care about errors - like "i know what im doing, theres definitely something here"
+
+- ![!](https://user-images.githubusercontent.com/107798155/193441727-e92847bc-df2b-4d9d-8771-53f89f73d3c3.png)
+
+4. Using this picture below, explain...
+
+  - What the error message means - Code is returning a String optional not a String.
+  - Why we're getting this error -  because dictionaries return optinal values
+  - How to fix it - Either force unwrap it ( Social[0x03]! ) or change the return type to be an optional ( pub fun main(): String? {} )
+  
+  error picture https://raw.githubusercontent.com/emerald-dao/beginner-cadence-course/main/chapter2.0/images/wrongcode.png
+
