@@ -107,5 +107,6 @@
   - Why we're getting this error -  because dictionaries return optinal values
   - How to fix it - Either force unwrap it ( Social[0x03]! ) or change the return type to be an optional ( pub fun main(): String? {} )
   
-  error picture https://raw.githubusercontent.com/emerald-dao/beginner-cadence-course/main/chapter2.0/images/wrongcode.png
+ - Error picture => <img width="1361" alt="wrongcode" src="https://user-images.githubusercontent.com/107798155/193442011-b81e5652-0749-40a7-8aa8-735566aba888.png">
+ 
 
