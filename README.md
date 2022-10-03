@@ -174,3 +174,89 @@ pub fun main(account:Address): Cadence.Cats{
 
 ```
 
+# Chapter 3 Day 1 - Resources
+
+1. In words, list 3 reasons why structs are different from resources.
+  
+  -  resources can't be copied but structs can be copied easily
+  -  resources can't be lost, we can  intentionally destroy it.
+  -  resources must be created and moved with very intentional, and there is  specific syntax to move resource.
+
+2. Describe a situation where a resource might be better to use than a struct.
+
+  - A resource is useful when the data is very valuable and it will be unique and needs to be carefully tracked, like a NFT.
+
+3. What is the keyword to make a new resource?
+
+  - create
+
+4. Can a resource be created in a script or transaction (assuming there isn't a public function to create one)?
+
+  - No, it has to be done in the contract.
+
+5. What is the type of the resource below?
+
+  ```
+  pub resource Jacob {
+
+  }
+  ```
+ - @Jacob
+
+6. Let's play the "I Spy" game from when we were kids. I Spy 4 things wrong with this code. Please fix them.
+ 
+ Error code
+ ```
+ pub contract Test {
+
+    // Hint: There's nothing wrong here ;)
+    pub resource Jacob {
+        pub let rocks: Bool
+        init() {
+            self.rocks = true
+        }
+    }
+
+    pub fun createJacob(): Jacob { // there is 1 here
+        let myJacob = Jacob() // there are 2 here
+        return myJacob // there is 1 here
+    }
+}
+ ```
+ 
+ Correct code
+ 
+ ```
+ pub contract Test {
+
+    // Hint: There's nothing wrong here ;)
+    pub resource Jacob {
+        pub let rocks: Bool
+        init() {
+            self.rocks = true
+        }
+    }
+
+    pub fun createJacob(): @Jacob { // added '@' to define resource type
+        let myJacob <- create Jacob() // use move operator '<-' and 'create'
+        return <- myJacob // use move operator '<-'
+    }
+}
+ ```
+ 
+ 
+# Chapter 3 Day 2 - Resources in Dictionaries & Arrays
+
+1. Write your own smart contract that contains two state variables: an array of resources, and a dictionary of resources. Add functions to remove and add to each of them. They must be different from the examples above.
+
+```
+
+```
+ 
+ 
+ 
+
+
+
+
+
