@@ -250,11 +250,67 @@ pub fun main(account:Address): Cadence.Cats{
 1. Write your own smart contract that contains two state variables: an array of resources, and a dictionary of resources. Add functions to remove and add to each of them. They must be different from the examples above.
 
 ```
+pub contract Meta{
 
+pub var arrayOfMonkey: @[Monkey]
+pub var dictionaryOfMonkey: @{String:ModernMonkey}
+
+pub resource Monkey{
+
+ pub var name:String
+
+ init(){
+ self.name = "FunnyMonkey"
+ }
+}
+
+pub resource ModernMonkey{
+
+ pub let name:String
+
+ init(){
+ self.name = "ChingChongMonkey"
+ }
+}
+
+pub fun addMonkeyInArray(monkey:@Monkey){
+
+ self.arrayOfMonkey.append(<- monkey)
+
+}
+
+pub fun removeMonkeyfromArray(id:UInt64):@Monkey{
+ return <- self.arrayOfMonkey.remove(at: id)
+}
+
+
+pub fun addToDictionary(modernMonkey:@ModernMonkey){
+
+ let key = modernMonkey.name
+
+ self.dictionaryOfMonkey[key] <-! modernMonkey
+}
+
+pub fun removeFromDictionary(key:String):@ModernMonkey{
+
+ let monkey <- self.dictionaryOfMonkey.remove(key: key) 
+                   ?? panic("No resource at this key")
+
+ return <- monkey
+
+}
+
+init(){
+ self.arrayOfMonkey <- []
+ self.dictionaryOfMonkey <- {}
+ }
+}
 ```
  
  
- 
+# Chapter 3 Day 3 - References
+
+1. 
 
 
 
