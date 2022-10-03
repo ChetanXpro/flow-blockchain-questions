@@ -113,6 +113,8 @@
 # Chapter-2 Day 4
 
 1. Deploy a new contract that has a Struct of your choosing inside of it (must be different than Profile).
+2. Create a dictionary or array that contains the Struct you defined.
+3. Create a function to add to that array/dictionary.
 
 ```
 pub contract Cadence {
@@ -141,5 +143,34 @@ init(){
 self.mycats = {}
 }
 }
+```
+
+4. Add a transaction to call that function in step 3.
+
+```
+import Cadence from 0x01
+
+transaction(name:String,age:Int,account:Address){
+prepare(signer:AuthAccount){}
+
+
+execute{
+
+Cadence.addcats(name: name, age: age, account: account)
+
+}
+
+}
+```
+
+5. Add a script to read the Struct you defined.
+
+```
+import Cadence from 0x01
+
+pub fun main(account:Address): Cadence.Cats{
+  return Cadence.mycats[account]!
+}
+
 ```
 
