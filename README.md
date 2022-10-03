@@ -108,5 +108,38 @@
   - How to fix it - Either force unwrap it ( Social[0x03]! ) or change the return type to be an optional ( pub fun main(): String? {} )
   
  - Error picture => <img width="1361" alt="wrongcode" src="https://user-images.githubusercontent.com/107798155/193442011-b81e5652-0749-40a7-8aa8-735566aba888.png">
- 
+
+
+# Chapter-2 Day 4
+
+1. Deploy a new contract that has a Struct of your choosing inside of it (must be different than Profile).
+
+```
+pub contract Cadence {
+pub var mycats:{Address:Cats}
+pub struct Cats{
+
+pub var name:String
+pub var age:Int
+
+
+init(_name:String,_age:Int ){
+self.name = _name
+self.age = _age
+}
+}
+
+
+pub fun addcats(name:String,age:Int,account:Address){
+
+self.mycats[account] = Cats(_name:name,_age:age)
+
+}
+
+init(){
+
+self.mycats = {}
+}
+}
+```
 
