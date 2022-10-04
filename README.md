@@ -360,15 +360,15 @@ pub fun main():&Meta.ModernMonkey{
 
 3. Explain, in your own words, why references can be useful in Cadence.
 
-- We dont have to move resources here and there, we can easily get refereces and then we can read and update data easily.
+  - We dont have to move resources here and there, we can easily get refereces and then we can read and update data easily.
 
 
 # Chapter 3 Day 4 - Resource/Struct Interfaces
 
 1. Explain, in your own words, the 2 things resource interfaces can be used for (we went over both in today's content).
  
- - We can use resource interfaces when we want to expose certain function or informations to public and to restrict them to access private functions.
- - We can use resource interfaces to make sure  that our resources have certain functions and variables which are important.
+   - We can use resource interfaces when we want to expose certain function or informations to public and to restrict them to access private functions.
+   - We can use resource interfaces to make sure  that our resources have certain functions and variables which are important.
 
 2. Define your own contract. Make your own resource interface and a resource that implements the interface. Create 2 functions. In the 1st function, show    an example of not restricting the type of the resource and accessing its content. In the 2nd function, show an example of restricting the type of the    resource and NOT being able to access its content.
 
@@ -598,33 +598,33 @@ pub fun main() {
 
 1. Explain what lives inside of an account.
 
- - Account storage which can contain our nft etc
- - Smart contract, a account can have multiple contracts
+  - Account storage which can contain our nft etc
+  - Smart contract, a account can have multiple contracts
 
 2.What is the difference between the /storage/, /public/, and /private/ paths?
 
-- Storage  -> everything is stored in account storage and only owner can access storage.
--  public and private are paths 
--  Public -> Owner can link some data to public path so that everyone can see that like nft and nft deposit func.
--  Private -> Owner can give access to some peoples to access certain data and only those people can access that data
+   - Storage  -> everything is stored in account storage and only owner can access storage.
+   -  public and private are paths 
+   -  Public -> Owner can link some data to public path so that everyone can see that like nft and nft deposit func.
+   -  Private -> Owner can give access to some peoples to access certain data and only those people can access that data
 
 3. What does .save() do? What does .load() do? What does .borrow() do ?
 
-  - .save() -> We can save resources etc in our storage on certain path like /storage/Nft
+   - .save() -> We can save resources etc in our storage on certain path like /storage/Nft
   
-  - .load() -> We can get data from our storage and then we can some stuff with data.
+   - .load() -> We can get data from our storage and then we can some stuff with data.
   
-  - .borrow() -> We can borrow data directly from storage and we don't have to load our data from storage and then save it back. We can directly get                      reference to resource etc and then we can read that.
+   - .borrow() -> We can borrow data directly from storage and we don't have to load our data from storage and then save it back. We can directly get                      reference to resource etc and then we can read that.
  
 
 4. Explain why we couldn't save something to our account storage inside of a script.
 
-  - We can only save something to our storage in transaction prepare phase , only signer is authorized to access their storage, and in script we can         only view data.
+   - We can only save something to our storage in transaction prepare phase , only signer is authorized to access their storage, and in script we can         only view data.
 
 5. Explain why I couldn't save something to your account.
 
-  - You dont have my auth account access  
-  - Each signer can only save to their own storage.
+   - You dont have my auth account access  
+   - Each signer can only save to their own storage.
 
 
 6. Define a contract that returns a resource that has at least 1 field in it. Then, write 2 transactions:
@@ -634,7 +634,7 @@ pub fun main() {
    ii. A transaction that first saves the resource to account storage, then borrows a reference to it, and logs a field inside the resource.
 
 
-- Contract
+  - Contract
   
   ```
    pub contract Zolo {
@@ -684,7 +684,7 @@ destroy again
 
 ```
 
-- Transaction ii
+  - Transaction ii
 
 ```
 import Zolo from 0x01
