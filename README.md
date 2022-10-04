@@ -97,6 +97,7 @@
 
 3. Explain what the force unwrap operator ! does, with an example different from the one I showed you (you can just change the type).
 
+- ! wll say if it is nill then panic and abort the program
 - ! force cadence to not care about errors - like "i know what im doing, theres definitely something here"
 
 - ![!](https://user-images.githubusercontent.com/107798155/193441727-e92847bc-df2b-4d9d-8771-53f89f73d3c3.png)
@@ -310,9 +311,56 @@ init(){
  
 # Chapter 3 Day 3 - References
 
-1. 
+1. Define your own contract that stores a dictionary of resources. Add a function to get a reference to one of the resources in the dictionary.
+
+- ```
+  pub contract Meta{
 
 
+pub var dictionaryOfMonkey: @{String:ModernMonkey}
+
+pub resource ModernMonkey {
+
+ pub let name:String
+
+
+ init(){
+ self.name = "Chetan"
+ }
+}
+
+ 
+pub fun getref(name:String):&ModernMonkey?{
+
+ return (&self.dictionaryOfMonkey[name] as &ModernMonkey?)?? panic("Nothing here")
+
+}
+
+
+init(){
+ 
+ self.dictionaryOfMonkey <- {
+  "MonkeyParty": <- create ModernMonkey()
+        }
+ }
+}
+  ```
+2. Create a script that reads information from that resource using the reference from the function you defined in part 1.
+
+- ```
+  import Meta from 0x01
+
+pub fun main():&Meta.ModernMonkey{
+
+ return (Meta.getref(name: "MonkeyParty")) ?? panic("Nothing here")
+ 
+}
+
+  ```
+
+3. Explain, in your own words, why references can be useful in Cadence.
+
+- We dont have to move resources here and there, we can easily get refereces and then we can read and update data easily.
 
 
 
