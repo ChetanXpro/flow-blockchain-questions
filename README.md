@@ -592,3 +592,117 @@ pub fun main() {
   
 }
   ```
+  
+  
+# Chapter 4 Day 1 - Account Storage
+
+1. Explain what lives inside of an account.
+
+ - Account storage which can contain our nft etc
+ - Smart contract, a account can have multiple contracts
+
+2.What is the difference between the /storage/, /public/, and /private/ paths?
+
+- Storage  -> everything is stored in account storage and only owner can access storage.
+-  public and private are paths 
+-  Public -> Owner can link some data to public path so that everyone can see that like nft and nft deposit func.
+-  Private -> Owner can give access to some peoples to access certain data and only those people can access that data
+
+3. What does .save() do? What does .load() do? What does .borrow() do ?
+
+  - .save() -> We can save resources etc in our storage on certain path like /storage/Nft
+  
+  - .load() -> We can get data from our storage and then we can some stuff with data.
+  
+  - .borrow() -> We can borrow data directly from storage and we don't have to load our data from storage and then save it back. We can directly get                      reference to resource etc and then we can read that.
+ 
+
+4. Explain why we couldn't save something to our account storage inside of a script.
+
+  - We can only save something to our storage in transaction prepare phase , only signer is authorized to access their storage, and in script we can         only view data.
+
+5. Explain why I couldn't save something to your account.
+
+  - You dont have my auth account access  
+  - Each signer can only save to their own storage.
+
+
+6. Define a contract that returns a resource that has at least 1 field in it. Then, write 2 transactions:
+
+   i. A transaction that first saves the resource to account storage, then loads it out of account storage, logs a field inside the resource, and               destroys it.
+
+   ii. A transaction that first saves the resource to account storage, then borrows a reference to it, and logs a field inside the resource.
+
+
+- Contract
+  
+  ```
+   pub contract Zolo {
+
+    pub resource NFT {
+
+    pub let name:String
+
+    init(_name:String){
+     self.name = _name
+    }
+    
+   }
+
+   pub fun mint(name:String):@NFT{
+
+     return <- create NFT(_name:name)
+
+     } 
+
+
+     }
+  ```
+  - Transaction i
+
+```
+import Zolo from 0x01
+
+transaction(name:String){
+
+prepare(signer:AuthAccount){
+
+
+let mynft <- Zolo.mint(name: name)
+
+signer.save(<- mynft, to: /storage/mynft)
+
+let again <- signer.load<@Zolo.NFT>(from: /storage/mynft) ?? panic("Nothing here")
+
+log(again.name)
+
+destroy again
+
+}
+
+}
+
+```
+
+- Transaction ii
+
+```
+import Zolo from 0x01
+
+transaction(name:String){
+
+prepare(signer:AuthAccount){
+
+
+let mynft <- Zolo.mint(name: name)
+
+signer.save(<- mynft, to: /storage/mynft)
+
+let nft = signer.borrow<&Zolo.NFT>(from: /storage/mynft) ?? panic("Nothing here")
+
+log(nft.name)
+
+}
+}
+
+```
