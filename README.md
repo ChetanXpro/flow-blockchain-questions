@@ -590,6 +590,8 @@ pub fun main() {
   A -> We can read
   B -> We can read
   
+     Public function
+  
 }
   ```
   
@@ -601,7 +603,7 @@ pub fun main() {
   - Account storage which can contain our nft etc
   - Smart contract, a account can have multiple contracts
 
-2.What is the difference between the /storage/, /public/, and /private/ paths?
+2. What is the difference between the /storage/, /public/, and /private/ paths?
 
    - Storage  -> everything is stored in account storage and only owner can access storage.
    -  public and private are paths 
@@ -706,3 +708,122 @@ log(nft.name)
 }
 
 ```
+
+# Chapter 4 Day 2 - Capabilities
+ 
+1. What does .link() do ?
+
+  - We can link some data from storage to public or private path.
+
+2. In your own words (no code), explain how we can use resource interfaces to only expose certain things to the /public/ path.
+
+  - If we have some important function in our resource like to withdraw an NFT, and when we link our resource to public path then anyone can call it and     withdraw nft, 
+  - BUT  if we use resource interface then we can limit people to only read nft name and some more details which we want to show them.
+
+3. Deploy a contract that contains a resource that implements a resource interface. Then, do the following:
+
+   i. In a transaction, save the resource to storage and link it to the public with the restrictive interface.
+
+   ii. Run a script that tries to access a non-exposed field in the resource interface, and see the error pop up.
+
+   iii. Run the script and access something you CAN read from. Return it from the script.
+   
+
+ - Contract 
+
+  ```
+  pub contract Zolo {
+
+
+    pub resource interface INFT {
+
+      pub name:String
+    
+    }
+
+    pub resource NFT:INFT {
+
+     pub var name:String
+
+     pub fun changename(newname:String){
+       self.name = newname
+     }
+
+     init(_name:String){
+      self.name = _name
+     }
+    
+   }
+
+   pub fun mint(name:String):@NFT{
+
+    return <- create NFT(_name:name)
+
+   } 
+
+
+  }
+  
+  ```
+  
+i. Transaction 
+
+```
+import Zolo from 0x01
+
+transaction(name:String){
+
+prepare(signer:AuthAccount){
+
+
+let mynft <- Zolo.mint(name: name)
+
+signer.save(<- mynft, to: /storage/mynft)
+
+signer.link<&Zolo.NFT{Zolo.INFT}>(/public/mynft, target: /storage/mynft) ?? panic("Nothing to link")
+
+
+}
+
+}
+```
+ii. Script 
+
+```
+import Zolo from 0x01
+
+pub fun main(){
+
+let my = getAccount(0x01).getCapability<&Zolo.NFT{Zolo.INFT}>(/public/mynft)
+
+let test = my.borrow() ?? panic("Nothing here")
+
+test.changename(newname: "hi") // ERROR : // member of restricted type is not accessible:changename
+
+}
+
+
+```
+
+ iii. Script 
+ 
+ ```
+ import Zolo from 0x01
+
+pub fun main():String{
+
+let my = getAccount(0x01).getCapability<&Zolo.NFT{Zolo.INFT}>(/public/mynft)
+
+let test = my.borrow() ?? panic("Nothing here")
+
+return test.name
+
+}
+
+ 
+ ```
+ 
+ 
+ 
+ 
+  
