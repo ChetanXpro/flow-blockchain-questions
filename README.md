@@ -347,7 +347,7 @@ init(){
  ```
 2. Create a script that reads information from that resource using the reference from the function you defined in part 1.
 
-- ```
+```
   import Meta from 0x01
 
 pub fun main():&Meta.ModernMonkey{
@@ -363,4 +363,232 @@ pub fun main():&Meta.ModernMonkey{
 - We dont have to move resources here and there, we can easily get refereces and then we can read and update data easily.
 
 
+# Chapter 3 Day 4 - Resource/Struct Interfaces
 
+1. Explain, in your own words, the 2 things resource interfaces can be used for (we went over both in today's content).
+ 
+ - We can use resource interfaces when we want to expose certain function or informations to public and to restrict them to access private functions.
+ - We can use resource interfaces to make sure  that our resources have certain functions and variables which are important.
+
+2. Define your own contract. Make your own resource interface and a resource that implements the interface. Create 2 functions. In the 1st function, show    an example of not restricting the type of the resource and accessing its content. In the 2nd function, show an example of restricting the type of the    resource and NOT being able to access its content.
+
+ ```
+ pub contract Meta {
+
+pub resource interface IMonkey {
+
+ pub let name:String
+    
+}
+
+pub resource Monkey:IMonkey {
+
+  pub let name:String
+ 
+  pub let number:Int
+
+ init(){
+  self.name = "Chetan"
+  self.number = 4
+ }
+
+pub fun getname(){
+ let myname:@Monkey <- create Monkey()
+ log(myname.number)
+ destroy myname
+}
+
+pub fun getname2(){
+ 
+ let myname:@Monkey{IMonkey} <- create Monkey()
+
+ log(myname.number)
+  
+
+ destroy myname
+
+}    
+}
+}
+ ```
+ 
+3. How would we fix this code?
+ 
+ Bad code - 
+ 
+  ```
+ pub contract Stuff {
+
+    pub struct interface ITest {
+      pub var greeting: String
+      pub var favouriteFruit: String
+    }
+
+    // ERROR:
+    // `structure Stuff.Test does not conform 
+    // to structure interface Stuff.ITest`
+    pub struct Test: ITest {
+      pub var greeting: String
+
+      pub fun changeGreeting(newGreeting: String): String {
+        self.greeting = newGreeting
+        return self.greeting // returns the new greeting
+      }
+
+      init() {
+        self.greeting = "Hello!"
+      }
+    }
+
+    pub fun fixThis() {
+      let test: Test{ITest} = Test()
+      let newGreeting = test.changeGreeting(newGreeting: "Bonjour!") // ERROR HERE: `member of restricted type is not accessible: changeGreeting`
+      log(newGreeting)
+    }
+} 
+  ```
+  
+  
+  Correct code - 
+  
+  ```
+  pub contract Stuff {
+
+    pub struct interface ITest {
+      pub var greeting: String
+      pub var favouriteFruit: String
+      pub fun changeGreeting(newGreeting: String): String  // We have to add function in resource interface so that we can call that resource func in                                                                //function in which we applying interface 
+    }
+
+   
+    pub struct Test: ITest {
+      pub var greeting: String
+
+      pub var favouriteFruit:String // We have to add favouriteFruit variable because it is defined in interface
+      pub fun changeGreeting(newGreeting: String): String {
+        self.greeting = newGreeting
+        return self.greeting 
+      }
+
+      init() {
+        self.greeting = "Hello!"
+        self.favouriteFruit = "apple"
+      }
+    }
+
+    pub fun fixThis() {
+      let test: Test{ITest} = Test()
+      let newGreeting = test.changeGreeting(newGreeting: "Bonjour!") 
+      log(newGreeting)
+    }
+}
+  ```
+
+
+#  Chapter 3 Day 5 - Access Control
+
+1. For today's quest, you will be looking at a contract and a script. You will be looking at 4 variables (a, b, c, d) and 3 functions (publicFunc,         contractFunc, privateFunc) defined in SomeContract. In each AREA (1, 2, 3, and 4), I want you to do the following: for each variable (a, b, c, and d),   tell me in which areas they can be read (read scope) and which areas they can be modified (write scope). For each function (publicFunc, contractFunc,     and privateFunc), simply tell me where they can be called.  
+
+ ```
+ access(all) contract SomeContract {
+    pub var testStruct: SomeStruct
+
+    pub struct SomeStruct {
+
+        //
+        // 4 Variables
+        //
+
+        pub(set) var a: String
+
+        pub var b: String
+
+        access(contract) var c: String
+
+        access(self) var d: String
+
+        //
+        // 3 Functions
+        //
+
+        pub fun publicFunc() {}
+
+        access(contract) fun contractFunc() {}
+
+        access(self) fun privateFunc() {}
+
+
+        pub fun structFunc() {
+            /**************/
+            /*** AREA 1 ***/
+            /**************/
+            
+        A -> We can Read & Write
+        B -> We can Read & Write
+        C -> We can Read & Write
+        D -> We can Read & Write
+        }
+
+        init() {
+            self.a = "a"
+            self.b = "b"
+            self.c = "c"
+            self.d = "d"
+        }
+    }
+
+    pub resource SomeResource {
+        pub var e: Int
+
+        pub fun resourceFunc() {
+            /**************/
+            /*** AREA 2 ***/
+            /**************/
+            A -> We can Read & Write
+            B -> Only Read
+            C -> Only Read
+            D -> We cant read and Write
+        }
+
+        init() {
+            self.e = 17
+        }
+    }
+
+    pub fun createSomeResource(): @SomeResource {
+        return <- create SomeResource()
+    }
+
+    pub fun questsAreFun() {
+        /**************/
+        /*** AREA 3 ****/
+        /**************/
+        A -> We can Read & Write
+        B -> Only Read
+        C -> Only Read
+        D -> We cant read and Write
+        
+        We can call public and contract Function
+    }
+
+    init() {
+        self.testStruct = SomeStruct()
+    }
+}
+ ```
+ 
+ Script
+ 
+  ```
+  import SomeContract from 0x01
+
+pub fun main() {
+  /**************/
+  /*** AREA 4 ***/
+  /**************/
+  
+  A -> We can read
+  B -> We can read
+  
+}
+  ```
