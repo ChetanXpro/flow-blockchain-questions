@@ -962,3 +962,138 @@ return test.name
   }
 }
  ```
+
+
+
+
+
+# Chapter 5 Day 1 - Pre/Post Conditions & Events
+
+1. Describe what an event is, and why it might be useful to a client.
+
+ - When we define a event and then emit it , it will broadcast it on blockchain
+ - For example if we emit an event in a mint function and transfer function , every time someone mint an NFT event will broadcast it on blockchain
+ - We can also use emitted messages in our frontend.
+ - It will also a cheaper solution to get info in our frontend
+
+2. Deploy a contract with an event in it, and emit the event somewhere else in the contract indicating that it happened.
+
+```
+pub contract YUP{
+
+pub event favFruit(fruit:String)
+pub event favFruitChanged(from:String,to:String)
+
+
+pub var myfavFruit:String
+
+
+pub fun changeFavFruit(fruit:String){
+
+emit favFruitChanged(from:self.myfavFruit,to:fruit)
+
+self.myfavFruit = fruit
+}
+
+init(){
+ self.myfavFruit = "DevilFruit"
+ emit favFruit(fruit:self.myfavFruit)
+}
+
+}
+```
+
+3. Using the contract in step 2), add some pre conditions and post conditions to your contract to get used to writing them out.
+
+```
+pub contract YUP{
+
+pub event favFruit(fruit:String)
+pub event favFruitChanged(from:String,to:String)
+
+pub var limit:UInt64
+pub var namechangeCount:UInt64
+
+pub var myfavFruit:String
+
+
+pub fun changeFavFruit(fruit:String){
+
+pre {
+  fruit != "Apple" : "You should eat banana or something else  ok?"
+}
+
+post {
+  self.limit > self.namechangeCount:"You cant change your name anymore"
+}
+
+emit favFruitChanged(from:self.myfavFruit,to:fruit)
+self.namechangeCount = self.namechangeCount + 1
+self.myfavFruit = fruit
+}
+
+init(){
+ self.myfavFruit = "DevilFruit"
+ emit favFruit(fruit:self.myfavFruit)
+ self.limit = 5
+ self.namechangeCount = 0
+}
+
+}
+```
+
+4. For each of the functions below (numberOne, numberTwo, numberThree), follow the instructions.
+    
+    - Number One -> It will log the name. (pre clear)
+    - Number Two -> It will not return value (Post fail)
+    - Number Three -> No it will not log number (Before value is 0 and then it add 1 to it thats why it will fail post condition)
+ 
+ ```
+ pub contract Test {
+
+  // TODO
+  // Tell me whether or not this function will log the name.
+  // name: 'Jacob'
+  pub fun numberOne(name: String) {
+    pre {
+      name.length == 5: "This name is not cool enough."
+    }
+    log(name)
+  }
+
+  // TODO
+  // Tell me whether or not this function will return a value.
+  // name: 'Jacob'
+  pub fun numberTwo(name: String): String {
+    pre {
+      name.length >= 0: "You must input a valid name."
+    }
+    post {
+      result == "Jacob Tucker"
+    }
+    return name.concat(" Tucker")
+  }
+
+  pub resource TestResource {
+    pub var number: Int
+
+    // TODO
+    // Tell me whether or not this function will log the updated number.
+    // Also, tell me the value of `self.number` after it's run.
+    pub fun numberThree(): Int {
+      post {
+        before(self.number) == result + 1
+      }
+      self.number = self.number + 1
+      return self.number
+    }
+
+    init() {
+      self.number = 0
+    }
+
+  }
+
+}
+ 
+ ```
