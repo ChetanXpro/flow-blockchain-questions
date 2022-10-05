@@ -1169,4 +1169,203 @@ init(){
 }
   ```
 
+# Chapter 5 Day 3 - Creating an NFT Contract: Implementing the NonFungibleToken Standard (Part 3/3)
+ 
 
+ 1. What does "force casting" with as! do? Why is it useful in our Collection?
+
+   - as! will downcast to more specific type from generic type , it will make sure no one can deposit there own NFT type And only they can deposit our        NFT type
+  
+
+ 2. What does auth do? When do we use it?
+
+   - When we have to downcast reference we have to use auth and authorsied the reference.In our NFT contract borrow function we are getting                  &NonFungibleToken.NFT reference but &NonFungibleToken.NFT expose only id so we need more specific reference to &NFT, so in this case we have to use
+     authorsied reference to downcast.
+     
+     
+ 3. This last quest will be your most difficult yet. Take this contract:
+
+  - Contract
+
+   ```
+   import NonFungibleToken from 0x02
+
+pub contract CryptoPoops: NonFungibleToken {
+  pub var totalSupply: UInt64
+
+  pub event ContractInitialized()
+  pub event Withdraw(id: UInt64, from: Address?)
+  pub event Deposit(id: UInt64, to: Address?)
+
+  pub resource NFT: NonFungibleToken.INFT {
+    pub let id: UInt64
+
+    pub let name: String
+    pub let favouriteFood: String
+    pub let luckyNumber: Int
+
+    init(_name: String, _favouriteFood: String, _luckyNumber: Int) {
+      self.id = self.uuid
+
+      self.name = _name
+      self.favouriteFood = _favouriteFood
+      self.luckyNumber = _luckyNumber
+    }
+  }
+
+    pub resource interface CollectionPublic {
+        pub fun deposit(token: @NonFungibleToken.NFT)
+        pub fun getIDs(): [UInt64]
+        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
+        pub fun borrowAuthNFT(id: UInt64): &NFT
+    }
+ 
+  pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic,CollectionPublic {
+    pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+
+    pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+      let nft <- self.ownedNFTs.remove(key: withdrawID) 
+            ?? panic("This NFT does not exist in this Collection.")
+      emit Withdraw(id: nft.id, from: self.owner?.address)
+      return <- nft
+    }
+
+    pub fun deposit(token: @NonFungibleToken.NFT) {
+      let nft <- token as! @NFT
+      emit Deposit(id: nft.id, to: self.owner?.address)
+      self.ownedNFTs[nft.id] <-! nft
+    }
+
+    pub fun getIDs(): [UInt64] {
+      return self.ownedNFTs.keys
+    }
+
+    pub fun borrowAuthNFT(id:UInt64):&NFT{
+    let reference = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+    
+    return reference as! &NFT
+    }
+
+    pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
+      return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+    }
+
+    init() {
+      self.ownedNFTs <- {}
+    }
+
+    destroy() {
+      destroy self.ownedNFTs
+    }
+  }
+
+  pub fun createEmptyCollection(): @NonFungibleToken.Collection {
+    return <- create Collection()
+  }
+
+  pub resource Minter {
+
+    pub fun createNFT(name: String, favouriteFood: String, luckyNumber: Int): @NFT {
+      return <- create NFT(_name: name, _favouriteFood: favouriteFood, _luckyNumber: luckyNumber)
+    }
+
+    pub fun createMinter(): @Minter {
+      return <- create Minter()
+    }
+
+  }
+
+  init() {
+    self.totalSupply = 0
+    emit ContractInitialized()
+    self.account.save(<- create Minter(), to: /storage/Minter)
+  }
+}
+   
+   ```
+
+
+ - Creating collection in storage and link it in public path with interface.
+
+ ```
+ import CryptoPoops from 0x03
+import NonFungibleToken from 0x02
+
+transaction(){
+
+prepare(signer:AuthAccount){
+
+signer.save( <- CryptoPoops.createEmptyCollection(), to: /storage/myCollection)
+
+signer.link<&CryptoPoops.Collection{NonFungibleToken.CollectionPublic,NonFungibleToken.Receiver, CryptoPoops.CollectionPublic}>(/public/myCollection, target: /storage/myCollection) 
+                  ?? panic("Nothing to link")
+}
+
+}
+ 
+ ```
+ 
+ - Minting an NFT
+
+```
+
+import CryptoPoops from 0x03
+
+transaction(recipientAddress:Address){
+
+prepare(signer:AuthAccount){
+
+
+let minter = signer.borrow<&CryptoPoops.Minter>(from: /storage/Minter) ?? panic("Signer dont have minter resource")
+
+ let recipientsCollection = getAccount(recipientAddress).getCapability(/public/myCollection).borrow<&CryptoPoops.Collection{CryptoPoops.CollectionPublic}>() 
+                             ?? panic("No public path")
+
+recipientsCollection.deposit(token: <- minter.createNFT(name: "haha",favouriteFood:"DEVIL FRUIT",luckyNumber:69))
+ 
+}
+execute{
+log("NFT Minted")
+}
+}
+```
+
+- Get account all nft ids so that we can read metadata with nft id in script.
+
+```
+import CryptoPoops from 0x03
+
+transaction(account:Address) {
+
+prepare(signer:AuthAccount){
+
+let ref = getAccount(account).getCapability(/public/myCollection).borrow<&CryptoPoops.Collection{CryptoPoops.CollectionPublic}>()
+                                        ?? panic("Nothng")
+
+ log(ref.getIDs())
+
+}
+}
+
+```
+
+- Script to read nft metadata
+
+```
+import CryptoPoops from 0x03
+
+pub fun main(account:Address,id:UInt64){
+
+let nft = getAccount(account).getCapability(/public/myCollection).borrow<&CryptoPoops.Collection{CryptoPoops.CollectionPublic}>()
+                                  ?? panic("No nft")
+
+
+let ref = nft.borrowNFT(id: id)
+
+log(ref)
+
+
+}
+
+
+```
