@@ -1369,3 +1369,72 @@ log(ref)
 
 
 ```
+
+
+# Chapter 6 Day 1 - Creating a Testnet Account & Deploying to Testnet
+
+
+1. Go to https://flow-view-source.com/testnet/. Where it says "Account", paste in the Flow address you generated and click "Go". On the left hand side,    you should see your NFT contract. Isn't it so cool to see it live on Testnet? Then, send the URL to the page.
+
+- MY ACCOUNT LINK -> https://flow-view-source.com/testnet/account/0x41fc5dad4ffbd005/
+
+
+# Chapter 6 Day 2 - Interacting With Our Contract on Testnet.
+
+
+1. Figure out how to mint an NFT to yourself by sending a transaction using the Flow CLI, like we did today when we set up our collection. You will also    likely have to pass an argument as well.
+
+ - Command flow transactions send ./cadence/transactions/MintNFT.cdc 0x41fc5dad4ffbd005 --network=testnet --signer=testnet-account
+ 
+ - Signed Transaction ✅
+
+  ![MintNFT](https://user-images.githubusercontent.com/107798155/194112567-91f22838-d866-49c5-9347-76c4f23b1650.png)
+  
+2. Run a script to read the new totalSupply using the Flow CLI
+
+  - Command - flow scripts execute ./cadence/scripts/TotalSupply.cdc --network=testnet
+
+  ![Totalsupply](https://user-images.githubusercontent.com/107798155/194113494-51a40aa7-6965-4c56-a6b1-e406eb01ec2d.png)
+
+  
+
+3. Run a script to read the ids of NFTs in someone's collection using the Flow CLI.
+
+  - Command -> flow scripts execute ./cadence/scripts/GetIds.cdc 0x41fc5dad4ffbd005 --network=testnet
+
+  ![GetIds](https://user-images.githubusercontent.com/107798155/194115025-78890ce1-27a7-4636-9d71-dcbc28c3b730.png)
+  
+  
+4. Run a script to read a specific NFT's metadata from someone's collection using the Flow CLI.
+
+ - Command -> flow scripts execute ./cadence/scripts/GetMetadata.cdc 0x41fc5dad4ffbd005 112296266  --network=testnet
+
+ ![Getmetadata](https://user-images.githubusercontent.com/107798155/194116130-5eb5d23e-c266-4297-a862-116cd7e9adaf.png)
+ 
+ 
+5. Run a script to read the GoatedGoats totalSupply on Flow Mainnet. Their contract lives here: https://flow-view-                                          source.com/mainnet/account/0x2068315349bdfce5/contract/GoatedGoats
+
+ - Command ->  flow scripts execute ./cadence/scripts/TotalSupply.cdc --network=mainnet
+ - Totalsuppy of GoatedGoats : 18477
+ 
+
+![Goat](https://user-images.githubusercontent.com/107798155/194117449-c3f50bdc-30d4-4110-96b4-89891e7ab8d0.png)
+
+
+6. Figure out how to read someone's GoatedGoats NFTs from their collection and run a script using the Flow CLI to do it.
+
+ - Command ->  flow scripts execute ./cadence/scripts/GetIds.cdc (Address)  --network=mainnet
+ - 
+  ```
+  import GoatedGoats from 0x2068315349bdfce5
+
+  pub fun main(account:Address):[UInt64]{
+
+   let ref = getAccount(account).getCapability(/public/GoatCollection).borrow<&GoatedGoats.Collection{GoatedGoats.GoatCollectionPublic}>()
+   ?? panic("No colection in this account")
+
+   return ref.getIDs()
+ 
+   }
+  ```
+
