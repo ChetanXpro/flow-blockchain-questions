@@ -1384,7 +1384,7 @@ log(ref)
 
 1. Figure out how to mint an NFT to yourself by sending a transaction using the Flow CLI, like we did today when we set up our collection. You will also    likely have to pass an argument as well.
 
- - Command flow transactions send ./cadence/transactions/MintNFT.cdc 0x41fc5dad4ffbd005 --network=testnet --signer=testnet-account
+ - Command -> flow transactions send ./cadence/transactions/MintNFT.cdc 0x41fc5dad4ffbd005 --network=testnet --signer=testnet-account
  
  - Signed Transaction ✅
 
@@ -1392,7 +1392,7 @@ log(ref)
   
 2. Run a script to read the new totalSupply using the Flow CLI
 
-  - Command - flow scripts execute ./cadence/scripts/TotalSupply.cdc --network=testnet
+  - Command -> flow scripts execute ./cadence/scripts/TotalSupply.cdc --network=testnet
 
   ![Totalsupply](https://user-images.githubusercontent.com/107798155/194113494-51a40aa7-6965-4c56-a6b1-e406eb01ec2d.png)
 
@@ -1424,7 +1424,7 @@ log(ref)
 6. Figure out how to read someone's GoatedGoats NFTs from their collection and run a script using the Flow CLI to do it.
 
  - Command ->  flow scripts execute ./cadence/scripts/GetIds.cdc (Address)  --network=mainnet
- - 
+ 
   ```
   import GoatedGoats from 0x2068315349bdfce5
 
