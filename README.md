@@ -824,6 +824,141 @@ return test.name
  ```
  
  
+# Chapter 4 Day 3 - Creating an NFT Contract: Collections (Part 1/3)
  
+ 
+1. Why did we add a Collection to this contract? List the two main reasons.
+
+  - With collection we can store multiple resource on single path
+  - And we can put multiple methods lke to deposit or withdraw nft.
+
+2. What do you have to do if you have resources "nested" inside of another resource? ("Nested resources")
+
+  - We have to define a destory function to destroy these nested resources manually.
+
+3. Brainstorm some extra things we may want to add to this contract. Think about what might be problematic with this contract and how we could fix it.
+
+    Idea #1: Do we really want everyone to be able to mint an NFT? thinking.
+         - No we dont want to allow anyone to mint us an NFT, We can allow createNFT function for admin only.
+
+    Idea #2: If we want to read information about our NFTs inside our Collection, right now we have to take it out of the Collection to do so. Is this g              Good?
+     
+     - We could add a function which will give us reference to our NFT. 
  
   
+
+# Chapter 4 Day 4 - Creating an NFT Contract: Transferring, Minting, and Borrowing (Part 2/3)
+
+ 1. Take our NFT contract so far and add comments to every single resource or function explaining what it's doing in your own words. Something like this:
+
+ ```
+ pub contract CryptoPoops {
+  pub var totalSupply: UInt64
+
+  // This is an NFT resource that contains a name,
+  // favouriteFood, and luckyNumber
+  pub resource NFT {
+    pub let id: UInt64
+
+    pub let name: String
+    pub let favouriteFood: String
+    pub let luckyNumber: Int
+
+    init(_name: String, _favouriteFood: String, _luckyNumber: Int) {
+      self.id = self.uuid
+
+      self.name = _name
+      self.favouriteFood = _favouriteFood
+      self.luckyNumber = _luckyNumber
+    }
+  }
+
+  // This is a resource interface that allows us to restrict public to use certain important functions like withdraw etc
+  // We have to give  this interface type when we link collection to public path.
+  // Public can only access functions which are availabe in this interface
+
+  pub resource interface CollectionPublic {
+    pub fun deposit(token: @NFT)
+    pub fun getIDs(): [UInt64]
+    pub fun borrowNFT(id: UInt64): &NFT
+  }
+
+  // we create this resource so that we can store our All NFTS and functions in one storage path
+  // by creating this resource we can easily access Map our nft to nft ids
+
+  pub resource Collection: CollectionPublic {
+    pub var ownedNFTs: @{UInt64: NFT}
+
+    // This function will desposit nft in our collection that is ownedNFTs dictionary
+
+    pub fun deposit(token: @NFT) {
+      self.ownedNFTs[token.id] <-! token
+    }
+    
+    // Whit this withdraw function we can easily withdraw NFT from  ownedNFTs
+
+    pub fun withdraw(withdrawID: UInt64): @NFT {
+      let nft <- self.ownedNFTs.remove(key: withdrawID) 
+              ?? panic("This NFT does not exist in this Collection.")
+      return <- nft
+    }
+    
+    // With this function we will get all nft ids which are present in our collection.
+
+    pub fun getIDs(): [UInt64] {
+      return self.ownedNFTs.keys
+    }
+  
+     // With this function we can get our nft metadata , its all details like name etc
+     // Basically we are creating a reference
+
+    pub fun borrowNFT(id: UInt64): &NFT {
+      return (&self.ownedNFTs[id] as &NFT?)!
+    }
+
+    init() {
+      self.ownedNFTs <- {}
+    }
+
+    // When resources are nested inside another resource then we have to define a destroy 
+    // function to destory nested resources manually
+
+    destroy() {
+      destroy self.ownedNFTs
+    }
+  }
+
+  // This function will create an empty collection inside signer storage
+  // And now signer can get NFT and he will get access to other functions of collection resource
+
+  pub fun createEmptyCollection(): @Collection {
+    return <- create Collection()
+  }
+
+  // We have to define a Minter resource so that only persion Who have this resource can Mint an NFT
+  // One who deployed this contract will get access to mint nft coz we create this resource in contract init
+
+  pub resource Minter {
+     
+     // Function to mint nft
+    pub fun createNFT(name: String, favouriteFood: String, luckyNumber: Int): @NFT {
+      return <- create NFT(_name: name, _favouriteFood: favouriteFood, _luckyNumber: luckyNumber)
+    }
+
+    //By this function owner can give minter resource to other account
+    // and then he can also mint nft
+
+    pub fun createMinter(): @Minter {
+      return <- create Minter()
+    }
+
+  }
+   
+   // Here we defining totalsupply
+   // we also saving minter resource to contract owner account
+  init() {
+    self.totalSupply = 0
+    self.account.save(<- create Minter(), to: /storage/Minter)
+  }
+}
+ ```
