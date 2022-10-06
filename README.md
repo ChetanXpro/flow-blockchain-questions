@@ -1144,6 +1144,8 @@ init(){
   ii. The implementing contract:
   
   ```
+  // We have to import interface contract
+  import ITest from 0x02
   pub contract Test { // We have to add :ITest to implement contract interface.
   pub var number: Int
   
